@@ -34,14 +34,6 @@ const CategoriesScreen = props => {
   );
 };
 
-CategoriesScreen.navigationOptions = {
-  headerTitle: 'Meal Categories',
-  headerStyle: {
-    backgroundColor: ( Platform.OS === 'ios') ? 'white' : Colors.primaryColor
-  },
-  headerTintColor: ( Platform.OS === 'ios') ? Colors.primaryColor : 'white'
-};
-
 const styles = StyleSheet.create({
     screen: {
         flex: 1,

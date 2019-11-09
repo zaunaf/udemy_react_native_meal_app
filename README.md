@@ -432,3 +432,71 @@ Object {
 }
 ```
 Berarti pada fungsi itu bisa navigasi bisa dimainkan.
+Kita mainkan:
+
+```js
+CategoriesMealsScreen.navigationOptions = navigationData => {
+    // Cek console jika ingin tahu apa saja
+    console.log(navigationData);
+    const categoryId = navigationData.navigation.getParam('categoryId');
+    const selectedCategory = CATEGORIES.find(cat => cat.id === categoryId);
+
+    return {
+        headerTitle: selectedCategory.title,
+        headerStyle: {
+            backgroundColor: ( Platform.OS === 'ios') ? 'white' : Colors.primaryColor
+        },
+        headerTintColor: ( Platform.OS === 'ios') ? Colors.primaryColor : 'white'
+    }
+};
+```
+Begitu caranya.
+
+## Mengurangi Repeating Ourself ketika Styling Header
+
+Kita barusan copas style2 header agar tiap screen sama. Gak bener ini, melanggar DRY.
+Kita rapikan. Kita hapus blok `CategoriesScreen.navigationOptions` di `CategoriesScreen.js`,
+kita pindahkan sebagian isinya ke `MealsNavigation.js` seperti ini:
+
+```js
+const MealsNavigator = createStackNavigator({
+    Categories: {
+        screen: CategoriesScreen,
+        navigationOptions: {
+            headerTitle: 'Meal Categories'
+        }
+    },
+    CategoryMeals: {
+        screen: CategoryMealsScreen
+    },
+    MealDetailScreen: {
+        screen: MealDetailScreen
+    },
+},{
+    defaultNavigationOptions: {
+        headerStyle: {
+            backgroundColor: ( Platform.OS === 'ios') ? 'white' : Colors.primaryColor
+        },
+        headerTintColor: ( Platform.OS === 'ios') ? Colors.primaryColor : 'white'      
+    }
+});
+```
+Yang artinya tiap navigation bisa disetting di sini, dan praktisnya, ada defaultNavigationOptions di mana
+setting2 yang sama setiap screen bisa kita atur di sini.
+
+Silakan juga hilangkan kode serupa di `CategoryMealsScreen.js`.
+
+## Optimize Screen
+
+Untuk meningkatkan performa screen, kita gunakan `react-native-screens`.
+Sekarang kita install dulu. Mungkin sudah terpaket, tapi tidak ada salahnya dijalankan siapa tahu belum.
+```
+npm install --save react-native-screens
+```
+Cara pakainya simpel. Di `App.js` kita tambahkan sesudah semua import dan sebelum code apapun dimulai:
+```js
+import { useScreens } from 'react-native-screens';
+...
+useScreens();
+```
+
