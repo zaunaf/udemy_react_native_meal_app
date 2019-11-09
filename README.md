@@ -23,9 +23,9 @@ import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
 const fetchFonts = () => {
-  Font.loadAsync({
-    'open-sans': require('./assets/fonts/OpenSans-Bold.ttf'),
-    'open-sans-bold': require('./assets/fonts/OpenSans-Regular.ttf')
+  return Font.loadAsync({
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
   })
 }
 
@@ -500,3 +500,109 @@ import { useScreens } from 'react-native-screens';
 useScreens();
 ```
 
+## Grid Styling and Optimizing
+
+Kita buat file baru, `components/CategoryGridTile.js`, isinya memindahkan sebagian dari `CategoriesScreen.js`
+dengan sambil mengambil parameters/props dari screen yang menggunakannya:
+
+```js
+import React from "react";
+import { TouchableOpacity, TouchableNativeFeedback, View, Text, StyleSheet, Platform } from "react-native";
+
+const CategoryGridTile = props => {
+
+  // Add Platform check to enable ripple effect on android
+  let TouchableComponent = TouchableOpacity;
+
+  if (Platform.OS === 'android' && Platform.Version >= 21) {
+    TouchableComponent = TouchableNativeFeedback;
+  }
+
+  return (
+    // Ganti jadi TouchableOpacity biar bisa distyle dan dicustom
+    <View style={styles.gridItem}>
+    <TouchableComponent
+      style={{flex: 1}}
+      onPress={props.onPress}>
+      <View style={{ ...styles.tileContainer, ...{backgroundColor: props.color} }}>
+        <Text style={styles.title} numberOfLines={2}>{props.title}</Text>
+      </View>
+    </TouchableComponent>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  gridItem: {
+      flex: 1,
+      margin: 15,
+      height: 150
+  },
+  tileContainer: {
+      flex: 1,
+      borderRadius: 10,      
+      shadowColor: 'black',
+      shadowOpacity: 0.26,
+      shadowOffset: {width: 0, height: 2},
+      shadowRadius: 10,
+      elevation: 3,
+      padding: 15,
+      justifyContent: 'flex-end',
+      alignItems: 'flex-end'
+  },
+  title: {
+    fontFamily: 'open-sans-bold',
+    fontSize: 22,
+    textAlign: 'right'
+  }
+});
+
+export default CategoryGridTile;
+```
+
+Kita ubah juga `CategoriesScreen.js` membuatnya menjadi lebih ramping:
+```js
+import React from 'react'
+import { StyleSheet, FlatList } from 'react-native'
+import { CATEGORIES } from '../data/dummy-data'
+import CategoryGridTile from '../components/CategoryGridTile';
+
+const CategoriesScreen = props => {
+  
+  const renderGridItem = (itemData) => {
+    return (
+      <CategoryGridTile title={itemData.item.title} color={itemData.item.color} onPress={() => {
+        // For each item, give action to open CategoryMealsScreen with params
+        props.navigation.navigate({
+          routeName: "CategoryMeals",
+          params: {
+            categoryId: itemData.item.id
+          }
+        });
+      }}/>
+    );
+  };
+
+  return (
+    // Flatlist 2 kolom
+    <FlatList
+      keyExtractor={(item, index) => item.id}
+      data={CATEGORIES}
+      renderItem={renderGridItem}
+      numColumns={2}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+    screen: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
+})
+
+export default CategoriesScreen;
+
+
+```

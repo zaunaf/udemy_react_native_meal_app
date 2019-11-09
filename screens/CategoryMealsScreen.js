@@ -21,8 +21,10 @@ const CategoriesMealsScreen = props => {
 // Code ini ada di luar class, akibatnya kita tidak bisa memasukkan selectedCategoris
 // Tapi ada solusinya, navigationOptions ini ternyata bisa jadi fungsi juga dengan parameter navigationData
 CategoriesMealsScreen.navigationOptions = navigationData => {
+    
     // Cek console jika ingin tahu apa saja
-    console.log(navigationData);
+    // console.log(navigationData);
+    
     const categoryId = navigationData.navigation.getParam('categoryId');
     const selectedCategory = CATEGORIES.find(cat => cat.id === categoryId);
 

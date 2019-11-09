@@ -1,25 +1,21 @@
 import React from 'react'
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Button, Platform } from 'react-native'
+import { StyleSheet, FlatList } from 'react-native'
 import { CATEGORIES } from '../data/dummy-data'
-import Colors from '../constants/Colors';
+import CategoryGridTile from '../components/CategoryGridTile';
 
 const CategoriesScreen = props => {
   
   const renderGridItem = (itemData) => {
     return (
-      // Ganti jadi TouchableOpacity biar bisa distyle dan dicustom
-      <TouchableOpacity
-        style={styles.gridItem}
-        onPress={() => {
-          // For each item, give action to open CategoryMealsScreen with params
-          props.navigation.navigate({routeName: "CategoryMeals", params: {
+      <CategoryGridTile title={itemData.item.title} color={itemData.item.color} onPress={() => {
+        // For each item, give action to open CategoryMealsScreen with params
+        props.navigation.navigate({
+          routeName: "CategoryMeals",
+          params: {
             categoryId: itemData.item.id
-          }});
-        }}>
-        <View >
-          <Text>{itemData.item.title}</Text>
-        </View>
-      </TouchableOpacity>
+          }
+        });
+      }}/>
     );
   };
 
@@ -39,11 +35,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    gridItem: {
-      flex: 1,
-      margin: 15,
-      height: 150
     }
 })
 

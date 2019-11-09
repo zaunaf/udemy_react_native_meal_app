@@ -8,9 +8,9 @@ import { useScreens } from 'react-native-screens';
 useScreens();
 
 const fetchFonts = () => {
-  Font.loadAsync({
-    'open-sans': require('./assets/fonts/OpenSans-Bold.ttf'),
-    'open-sans-bold': require('./assets/fonts/OpenSans-Regular.ttf')
+  return Font.loadAsync({
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
   })
 }
 
