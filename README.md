@@ -806,7 +806,7 @@ const CategoriesMealsScreen = props => {
     const selectedCategory = CATEGORIES.find(cat => cat.id === categoryId);
     
     // Filter meals according to the selected category
-    const displayedMeals = MEALS.filter(meal => meal.categoryIds.indexOf(categoryId) >= 0);
+    const listData = MEALS.filter(meal => meal.categoryIds.indexOf(categoryId) >= 0);
 
     // Function to render each meal item
     const renderMealItem = itemData => (
@@ -831,7 +831,7 @@ const CategoriesMealsScreen = props => {
       <View style={styles.screen}>
         <FlatList
           style={{ width: "100%" }}
-          data={displayedMeals}
+          data={listData}
           keyExtractor={(item, index) => item.id}
           renderItem={renderMealItem}       
         />
