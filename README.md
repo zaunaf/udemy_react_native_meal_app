@@ -195,8 +195,7 @@ expo install react-native-gesture-handler react-native-reanimated
 Kita buat `MealsNavigator.js`:
 
 ```js
-import { createAppContainer } from 'react-navigation'
-import { createStackNavigator } from 'react-navigation-stack';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 import CategoriesScreen from '../screens/CategoriesScreen'
 import CategoryMealsScreen from '../screens/CategoryMealsScreen'
 import MealDetailScreen from '../screens/MealDetailScreen'
@@ -497,27 +496,38 @@ Kita rapikan. Kita hapus blok `CategoriesScreen.navigationOptions` di `Categorie
 kita pindahkan sebagian isinya ke `MealsNavigation.js` seperti ini:
 
 ```js
-const MealsNavigator = createStackNavigator({
+import { Platform } from 'react-native';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
+
+import CategoriesScreen from '../screens/CategoriesScreen';
+import CategoryMealsScreen from '../screens/CategoryMealsScreen';
+import MealDetailScreen from '../screens/MealDetailScreen';
+import Colors from '../constants/Colors';
+
+const MealsNavigator = createStackNavigator(
+  {
     Categories: {
-        screen: CategoriesScreen,
-        navigationOptions: {
-            headerTitle: 'Meal Categories'
-        }
+      screen: CategoriesScreen
     },
     CategoryMeals: {
-        screen: CategoryMealsScreen
+      screen: CategoryMealsScreen
     },
-    MealDetail: {
-        screen: MealDetailScreen
-    },
-},{
-    defaultNavigationOptions: {
-        headerStyle: {
-            backgroundColor: ( Platform.OS === 'ios') ? 'white' : Colors.primaryColor
-        },
-        headerTintColor: ( Platform.OS === 'ios') ? Colors.primaryColor : 'white'      
+    MealDetail: MealDetailScreen
+  },
+  {
+    // initialRouteName: 'Categories',
+    defaultNavigationOptions: { 
+      headerStyle: {
+        backgroundColor: Platform.OS === 'android' ? Colors.primaryColor : ''
+      },
+      headerTintColor:
+        Platform.OS === 'android' ? 'white' : Colors.primaryColor,
+      headerTitle: 'A Screen'
     }
-});
+  }
+);
+
+export default createAppContainer(MealsNavigator);
 ```
 Yang artinya tiap navigation bisa disetting di sini, dan praktisnya, ada defaultNavigationOptions di mana
 setting2 yang sama setiap screen bisa kita atur di sini.
@@ -537,7 +547,6 @@ import { useScreens } from 'react-native-screens';
 ...
 useScreens();
 ```
-
 
 ## Mempercantik Tampilan Categories
 
@@ -857,3 +866,56 @@ Hasilnya:
 
 
 
+## Menambah Button pada Header
+
+Install dulu packagenya:
+```
+npm install --save react-navigation-header-buttons
+```
+Juga untuk jaga2, jalankan juga ini:
+```
+npm install --save @expo/vector-icons
+```
+
+Kita buat CustomHeaderButton dulu di `components/HeaderButton.js`:
+```js
+import React from "react";
+import { Platform } from "react-native";
+import { HeaderButton } from "react-navigation-header-buttons";
+import { Ionicons } from "@expo/vector-icons";
+import Colors from "../constants/Colors";
+
+const CustomHeaderButton = props => {
+  return (
+    <HeaderButton
+      {...props}
+      IconComponent={Ionicons}
+      iconSize={23}
+      color={(Platform.OS === 'android') ? 'white' : Colors.primaryColor}
+    />
+  );
+};
+
+export default CustomHeaderButton;
+```
+Setelah itu kita tambahkan di headerRight di `MealDetailScreen.js`:
+```js
+MealDetailScreen.navigationOptions = navigationData => {
+  ...
+  return {
+    headerTitle: selectedMeal.title,
+    headerRight: (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title="Favorite"
+          iconName="ios-star"
+          onPress={() => {
+            console.log('Mark as favorite!');
+          }}
+        />
+      </HeaderButtons>
+    )
+  };
+};
+```
+Seperti itu. Cobain, kalau bintang ditekan apakah `console.log` nya nendang atau tidak.

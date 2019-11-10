@@ -1,7 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from "react-native";
-import MealDetailScreen from "../screens/MealDetailScreen";
-import { MEALS } from "../data/dummy-data";
 
 const MealItem = props => {
   return (
@@ -27,14 +25,6 @@ const MealItem = props => {
       </TouchableOpacity>
     </View>
   );
-};
-
-MealDetailScreen.navigationOptions = (navigationData) => {
-  const mealId = navigationData.navigation.getParam('mealId');
-  const selectedModel = MEALS.find(meal => meal.id === mealId);
-  return {
-    headerTitle: selectedModel.title
-  }
 };
 
 const styles = StyleSheet.create({

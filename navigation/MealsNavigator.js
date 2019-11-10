@@ -1,31 +1,32 @@
 import { Platform } from 'react-native';
-import { createAppContainer } from 'react-navigation'
-import { createStackNavigator } from 'react-navigation-stack';
-import CategoriesScreen from '../screens/CategoriesScreen'
-import CategoryMealsScreen from '../screens/CategoryMealsScreen'
-import MealDetailScreen from '../screens/MealDetailScreen'
-import Colors from "../constants/Colors";
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
-const MealsNavigator = createStackNavigator({
+import CategoriesScreen from '../screens/CategoriesScreen';
+import CategoryMealsScreen from '../screens/CategoryMealsScreen';
+import MealDetailScreen from '../screens/MealDetailScreen';
+import Colors from '../constants/Colors';
+
+const MealsNavigator = createStackNavigator(
+  {
     Categories: {
-        screen: CategoriesScreen,
-        navigationOptions: {
-            headerTitle: 'Meal Categories'
-        }
+      screen: CategoriesScreen
     },
     CategoryMeals: {
-        screen: CategoryMealsScreen
+      screen: CategoryMealsScreen
     },
-    MealDetail: {
-        screen: MealDetailScreen
-    },
-},{
-    defaultNavigationOptions: {
-        headerStyle: {
-            backgroundColor: ( Platform.OS === 'ios') ? 'white' : Colors.primaryColor
-        },
-        headerTintColor: ( Platform.OS === 'ios') ? Colors.primaryColor : 'white'      
+    MealDetail: MealDetailScreen
+  },
+  {
+    // initialRouteName: 'Categories',
+    defaultNavigationOptions: { 
+      headerStyle: {
+        backgroundColor: Platform.OS === 'android' ? Colors.primaryColor : ''
+      },
+      headerTintColor:
+        Platform.OS === 'android' ? 'white' : Colors.primaryColor,
+      headerTitle: 'A Screen'
     }
-});
+  }
+);
 
 export default createAppContainer(MealsNavigator);
