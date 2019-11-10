@@ -180,6 +180,10 @@ const styles = StyleSheet.create({
 export default MealDetailScreen;
 ```
 
+Hasilnya:
+[![meal_app_boilerplate_nav](/images/mobile/react_native/meal_app_boilerplate_nav.gif)](/images/design/power_designer/meal_app_boilerplate_nav.gif)
+
+
 
 ### Menambahkan React Navigation
 
@@ -289,6 +293,7 @@ Contohnya yg seperti ini misal login screen.
 ```js
 props.navigation.replace('MainScreen');
 ```
+
 
 ## Menggarap Screen Pertama: CategoriesScreen
 
@@ -919,3 +924,120 @@ MealDetailScreen.navigationOptions = navigationData => {
 };
 ```
 Seperti itu. Cobain, kalau bintang ditekan apakah `console.log` nya nendang atau tidak.
+
+## Menambah Tab Navigation
+
+```js
+// Tambahkan dulu importnya
+import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation';
+
+// Siapkan iconnya
+import { Ionicons } from "@expo/vector-icons";
+
+// Buat Tab Navigator. MealsNavigator menjadi anggotanya
+const MealsFavTabNavigator = createBottomTabNavigator(
+  {
+    Meals: {
+      screen: MealsNavigator,
+      navigationOptions: {
+        tabBarIcon: (tabInfo) => {
+          return <Ionicons name="ios-restaurant" size={25} color={tabInfo.tintColor} />;
+        }
+      }
+    },
+    Favourites: {
+      screen: FavouritesScreen,
+      navigationOptions: {
+        tabBarIcon: tabInfo => {
+          return <Ionicons name="ios-star" size={25} color={tabInfo.tintColor} />;
+        }
+      }
+    }
+  },
+  {
+    tabBarOptions: {
+      activeTintColor: Colors.accentColor
+    }
+  }
+);
+
+// Arahkan appContainer ke tabNavigator
+export default createAppContainer(MealsFavTabNavigator);
+```
+
+Begitu.
+
+### Menyesuaikan Tab Navigation untuk Android
+Yang tampil tadi itu TabNavigation seperti punya IOS.
+Kalau kita tidak mau tampil seperti itu di Android, caranya seperti berikut:
+
+Install dulu:
+```bash
+npm install --save react-native-paper
+npm install --save react-navigation-material-bottom-tabs
+```
+
+Kita pisahkan config yang shared dipake oleh kedua OS, dan sisanya sebagai default kita tentukan:
+```js
+// Jadikan config
+const tabScreenConfig =   {
+  Meals: {
+    screen: MealsNavigator,
+    navigationOptions: {
+      tabBarIcon: (tabInfo) => {
+        return <Ionicons name="ios-restaurant" size={25} color={tabInfo.tintColor} />;
+      }
+    }
+  },
+  Favourites: {
+    screen: FavouritesScreen,
+    navigationOptions: {
+      tabBarIcon: tabInfo => {
+        return <Ionicons name="ios-star" size={25} color={tabInfo.tintColor} />;
+      }
+    }
+  }
+};
+// Panggil config, setting sisanya sesuai platform
+const MealsFavTabNavigator = Platform.OS === 'android' ? 
+  createMaterialBottomTabNavigator(
+    tabScreenConfig,
+    {
+      activeColor: Colors.accentColor,
+      shifting: true
+    }
+  ) 
+  : 
+  createBottomTabNavigator(
+    tabScreenConfig, 
+    {
+      tabBarOptions: {
+        activeTintColor: Colors.accentColor
+      }
+    }
+  );
+```
+
+Maka hasilnya begini. Dengan `shifting` true:
+==gambar
+
+Dengan `shifting` false:
+==gambar
+
+Kita bisa style lagi:
+
+```js
+  createMaterialBottomTabNavigator(
+    tabScreenConfig,
+    {
+      activeColor: "white",
+      shifting: true,
+      barStyle: {
+        backgroundColor: Colors.accentColor
+      }
+    }
+  ) 
+```
+
+## Refactor untuk Reuse Meal List
+

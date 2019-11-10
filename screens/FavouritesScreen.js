@@ -17,4 +17,10 @@ const styles = StyleSheet.create({
     }
 })
 
+FavouritesScreen.navigationOptions = navigationData => {
+    return {
+        headerTitle: 'Favourites'
+    };
+}
+
 export default FavouritesScreen;
