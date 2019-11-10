@@ -1,10 +1,18 @@
----
+<!-- ---
 title: Meal App
 sideTitle: Meal App
----
+--- -->
 
+# Udemy React Native Course: Meal App
+
+## Mendesain Aplikasi
+Ceritanya kita membuat aplikasi resep yang terdiri dari kategori,
+daftar resep sesuai kategorinya, sampai ke detil resep.
+
+## Membuat Application Boiler Plate Code
 Initialize dulu aplikasi baru.
 
+### Membuat Screens
 Kita buat folder `screens` kemudian kita tambahkan semua screen.
 ```
 CategoriesScreen.js
@@ -173,7 +181,7 @@ export default MealDetailScreen;
 ```
 
 
-## Install React Navigation
+### Menambahkan React Navigation
 
 Di aplikasi Game App, kita tidak menggunakan navigasi. Tapi umumnya aplikasi bisnis kita punya mekanisme navigasi.
 Kita coba gunakan. Instal dulu:
@@ -197,7 +205,7 @@ import MealDetailScreen from '../screens/MealDetailScreen'
 const MealsNavigator = createStackNavigator({
     Categories: CategoriesScreen,
     CategoryMeals: CategoryMealsScreen,
-    MealDetailScreen: MealDetailScreen
+    MealDetail: MealDetailScreen
 });
 
 export default createAppContainer(MealsNavigator);
@@ -234,7 +242,7 @@ const CategoriesMealsScreen = props => {
         <View style={styles.screen}>
             <Text>Category Meals Screen</Text>
             <Button title="Go to Meal Detail" onPress={() => {
-                props.navigation.navigate('MealDetailScreen');
+                props.navigation.navigate('MealDetail');
             }} />
         </View>
     )
@@ -247,7 +255,7 @@ Maka hasilnya
 Inilah hasilnya navigasi.
 
 
-## Push
+#### Push
 
 Perbedaan push dan navigate adalah, bahwa jika kita gunakan push, kita menggunakan ulang screen yang sama.
 Kasus contohnya adalah misal kita membuat folder browser semacam dropbox. Misalnya:
@@ -255,7 +263,7 @@ Kasus contohnya adalah misal kita membuat folder browser semacam dropbox. Misaln
 props.navigation.push('SubFolder');
 ```
 
-## Custom Back Button
+#### Custom Back Button
 
 Kenapa gak pakai button `Back` bawaan aja? Ya bisa aja misal kita ingin user melakukan save sekaligus kita back.
 Contohnya kita tambahkan di `MealDetailScreen.js`:
@@ -283,14 +291,37 @@ Contohnya yg seperti ini misal login screen.
 props.navigation.replace('MainScreen');
 ```
 
-## Membuat Flatlist Grid
+## Menggarap Screen Pertama: CategoriesScreen
 
+Setelah navigasi ok, kita coba menampilkan data. Utk menampilkan data kita harus punya model dan sumber data.
+Sumber datanya sekarang data dummy dulu, karena di tahap ini kita belum ada server2an. Di sini kita gunakan FlatList
+
+### Membuat File Model
+Buat `models/category.js`, isinya:
+```js
+class Category {
+    constructor(id, title, color) {
+        this.id = id;
+        this.title = title
+        this.color = color
+    }
+}
+
+export default Category;
+```
+
+### Mengaitkan Data Dummy
+Datanya kita buat di `data/dummy-data.js`, sourcenya bisa diambil di sini:
+https://gist.github.com/zaunaf/0ce0e566d2a831ee3e7071515e937f9c
+
+### Menampilkan Data
 Kita mulai coba menampilkan data menggunakan flatlist grid. Ubah `CategoriesScreen.js` jadi begini:
 ```js
 import React from 'react'
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Button, Platform } from 'react-native'
 import { CATEGORIES } from '../data/dummy-data'
 import Colors from '../constants/Colors';
+
 const CategoriesScreen = props => {
   
   const renderGridItem = (itemData) => {
@@ -335,11 +366,11 @@ const styles = StyleSheet.create({
 
 export default CategoriesScreen;
 ```
-Sudah mulai muncul daftarnya.
+Kalau kita save dan cek di emulator seharusnya sudah mulai muncul daftarnya walaupun masih sederhana.
 
+### Melink-kan Navigasi
 
-## Melink Navigasi
-
+Sebelumnya kita pake tombol utk navigate, kita ubah navigasi menjadi tampilan data yang bisa di-press.
 Kita ubah jadi `<TouchableOpacity>` dengan onPress, kirim params dll. Pindahkan juga stylenya:
 ```js
       <TouchableOpacity
@@ -356,9 +387,14 @@ Kita ubah jadi `<TouchableOpacity>` dengan onPress, kirim params dll. Pindahkan 
       </TouchableOpacity>
 ```
 
-## Mengcostumize Screen Berikutnya
+## Mengorganisasi Navigation Headers & Styles
 
-Ok sekarang kita tangkap parameter yang dikirimkan tadi:
+Sekarang kita melipir membahas navigasi.
+
+Kita masuk ke screen berikutnya, `CategoriesMealsScreen.js`.
+Screen ini tampil diklik dari screen sebelumnya, `CategoriesScreen`.
+
+Kita tangkap parameter yang dikirimkan dari `CategoriesScreen` tadi:
 
 ```js
 import { CATEGORIES } from '../data/dummy-data'
@@ -375,10 +411,12 @@ Dan kita tampilkan:
             <Text>Category Meals Screen</Text>
             <Text>{selectedCategory.title}</Text>
 ```
-Ok sudah lumayan. Tapi agak jelek ya gak muncul di title. Kita gunakan lagi navigationOptions.
+Ok sudah lumayan. Tapi agak jelek ya, dan gak muncul di title. Kita gunakan lagi navigationOptions.
+
 Namun sayangnya Code ini ada di luar class, akibatnya kita tidak bisa memasukkan selectedCategory tadi.
 Tapi tenang ada solusinya, navigationOptions ini ternyata bisa jadi fungsi juga dengan parameter navigationData..
 Coba kita tambahkan `console.log(navigationData)` di situ. 
+
 ```js
 CategoriesMealsScreen.navigationOptions = navigationData => {
     // Cek console jika ingin tahu apa saja
@@ -452,7 +490,7 @@ CategoriesMealsScreen.navigationOptions = navigationData => {
 ```
 Begitu caranya.
 
-## Mengurangi Repeating Ourself ketika Styling Header
+### Mengurangi Repeating Ourself ketika Styling Header
 
 Kita barusan copas style2 header agar tiap screen sama. Gak bener ini, melanggar DRY.
 Kita rapikan. Kita hapus blok `CategoriesScreen.navigationOptions` di `CategoriesScreen.js`,
@@ -469,7 +507,7 @@ const MealsNavigator = createStackNavigator({
     CategoryMeals: {
         screen: CategoryMealsScreen
     },
-    MealDetailScreen: {
+    MealDetail: {
         screen: MealDetailScreen
     },
 },{
@@ -486,7 +524,7 @@ setting2 yang sama setiap screen bisa kita atur di sini.
 
 Silakan juga hilangkan kode serupa di `CategoryMealsScreen.js`.
 
-## Optimize Screen
+### Optimizing Screen
 
 Untuk meningkatkan performa screen, kita gunakan `react-native-screens`.
 Sekarang kita install dulu. Mungkin sudah terpaket, tapi tidak ada salahnya dijalankan siapa tahu belum.
@@ -500,7 +538,8 @@ import { useScreens } from 'react-native-screens';
 useScreens();
 ```
 
-## Grid Styling and Optimizing
+
+## Mempercantik Tampilan Categories
 
 Kita buat file baru, `components/CategoryGridTile.js`, isinya memindahkan sebagian dari `CategoriesScreen.js`
 dengan sambil mengambil parameters/props dari screen yang menggunakannya:
@@ -557,6 +596,8 @@ const styles = StyleSheet.create({
   }
 });
 
+// NavigationOptions dihapus, dipindah ke MealsNavigator.js
+
 export default CategoryGridTile;
 ```
 
@@ -603,6 +644,216 @@ const styles = StyleSheet.create({
 })
 
 export default CategoriesScreen;
-
-
 ```
+
+
+## Styling Second Screen: CategoryMealsScreen
+
+Layar kedua ini isinya daftar meals sesuai dengan kategori yang dipilih di layar pertama.
+Dia menampilkan setiap meals dengan datanya yang lengkap serta gambar.
+
+### Linking Data
+Setelah masuk kita link datanya. Buat modelnya dulu:
+```js
+class Meal {
+  constructor(
+    id,
+    categoryIds,
+    title,
+    affordability,
+    complexity,
+    imageUrl,
+    duration,
+    ingredients,
+    steps,
+    isGlutenFree,
+    isVegan,
+    isVegetarian,
+    isLactoseFree
+  ) {
+    this.id = id,
+    this.categoryIds = categoryIds,
+    this.title = title,
+    this.affordability = affordability,
+    this.complexity = complexity,
+    this.imageUrl = imageUrl,
+    this.duration = duration,
+    this.ingredients = ingredients,
+    this.steps = steps,
+    this.isGlutenFree = isGlutenFree,
+    this.isVegan = isVegan,
+    this.isVegetarian = isVegetarian,
+    this.isLactoseFree = isLactoseFree
+  }
+}
+
+export default Meal;
+```
+Dummy datanya masih sama file yang tadi `data/dummy-data.js`.
+
+Kita buat `MealItem.js` sebagai tampilan tiap meal:
+```js
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from "react-native";
+import MealDetailScreen from "../screens/MealDetailScreen";
+import { MEALS } from "../data/dummy-data";
+
+const MealItem = props => {
+  return (
+    <View style={styles.mealItem}>
+      <TouchableOpacity onPress={props.onSelectMeal}>
+        <View style={{ ...styles.mealRow, ...styles.mealHeader }}>
+          <ImageBackground 
+            source={{ uri: props.image }} 
+            style={styles.bgImage}
+          >
+            <View style={styles.titleContainer}>
+              <Text style={styles.title} numberOfLines={1}>
+                {props.title}
+              </Text>
+            </View>
+          </ImageBackground>
+        </View>
+        <View style={{ ...styles.mealRow, ...styles.mealDetail }}>
+          <Text>{props.duration}m</Text>
+          <Text>{props.complexity.toUpperCase()}</Text>
+          <Text>{props.affordability.toUpperCase()}</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+MealDetailScreen.navigationOptions = (navigationData) => {
+  const mealId = navigationData.navigation.getParam('mealId');
+  const selectedModel = MEALS.find(meal => meal.id === mealId);
+  return {
+    headerTitle: selectedModel.title
+  }
+};
+
+const styles = StyleSheet.create({
+  mealItem: {
+    height: 200,
+    width: '100%',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginVertical: 8,
+    shadowColor: 'black',
+    shadowOpacity: 0.26,
+    shadowRadius: 10,
+    shadowOffset: {width: 2, height: 0},
+    elevation: 2
+  },
+  bgImage: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end'
+  },
+  mealRow: {
+    flexDirection: "row"
+  },
+  mealHeader: {
+    height: '85%',
+  },
+  mealDetail: {
+    paddingHorizontal: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '15%'
+  },
+  titleContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingVertical: 5,
+    paddingHorizontal: 12
+  },
+  title: {
+    fontFamily: 'open-sans-bold',
+    fontSize: 20,
+    color: 'white',
+    textAlign: 'center'
+  }
+});
+
+export default MealItem;
+```
+
+Dan screennya kita update:
+```js
+import React from 'react'
+import { View, FlatList, Text, StyleSheet, Button } from 'react-native'
+import { CATEGORIES, MEALS } from '../data/dummy-data'
+import MealItem from '../components/MealItem';
+
+const CategoriesMealsScreen = props => {
+    // Catch passed params from caller screen
+    const categoryId = props.navigation.getParam('categoryId');
+    const selectedCategory = CATEGORIES.find(cat => cat.id === categoryId);
+    
+    // Filter meals according to the selected category
+    const displayedMeals = MEALS.filter(meal => meal.categoryIds.indexOf(categoryId) >= 0);
+
+    // Function to render each meal item
+    const renderMealItem = itemData => (
+      <MealItem
+        title={itemData.item.title}
+        duration={itemData.item.duration}
+        complexity={itemData.item.complexity}
+        affordability={itemData.item.affordability}
+        image={itemData.item.imageUrl}
+        onSelectMeal={() => {
+            props.navigation.navigate({
+                routeName: 'MealDetail',
+                params: {
+                    mealId: itemData.item.id
+                }
+            })
+        }}
+      />
+    );
+
+    return (
+      <View style={styles.screen}>
+        <FlatList
+          style={{ width: "100%" }}
+          data={displayedMeals}
+          keyExtractor={(item, index) => item.id}
+          renderItem={renderMealItem}       
+        />
+      </View>
+    );
+};
+
+// Code ini ada di luar class, akibatnya kita tidak bisa memasukkan selectedCategoris
+// Tapi ada solusinya, navigationOptions ini ternyata bisa jadi fungsi juga dengan parameter navigationData
+CategoriesMealsScreen.navigationOptions = navigationData => {
+    
+    // Cek console jika ingin tahu apa saja
+    // console.log(navigationData);
+
+    const categoryId = navigationData.navigation.getParam('categoryId');
+    const selectedCategory = CATEGORIES.find(cat => cat.id === categoryId);
+
+    return {
+        headerTitle: selectedCategory.title
+    }
+};
+
+const styles = StyleSheet.create({
+    screen: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 15
+    }
+})
+
+export default CategoriesMealsScreen;
+```
+
+Hasilnya: 
+==gambar==
+
+
+
